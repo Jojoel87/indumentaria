@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Pedido</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Formulario de Pedido de Indumentaria</h1>
+        <form id="formulario">
+            <label for="equipo">Equipo:</label>
+            <input type="text" id="equipo" name="equipo" required>
+
+            <label for="jugador">Jugador:</label>
+            <input type="text" id="jugador" name="jugador" required>
+
+            <label for="numero">Número:</label>
+            <input type="number" id="numero" name="numero" required>
+
+            <label for="articulo">Artículo:</label>
+            <input type="text" id="articulo" name="articulo" required>
+
+            <label for="talle">Talle:</label>
+            <input type="text" id="talle" name="talle" required>
+
+            <label for="comentarios">Comentarios:</label>
+            <textarea id="comentarios" name="comentarios"></textarea>
+
+            <button type="submit">Enviar Pedido</button>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
