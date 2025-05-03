@@ -1,39 +1,63 @@
-<script>
-  document.getElementById("pedidoForm").onsubmit = function(event) {
-    event.preventDefault(); // Para evitar el comportamiento por defecto del formulario
-    
-    var equipo = document.getElementById("equipo").value;
-    var comentarios = document.getElementById("comentarios").value;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Pedidos</title>
+</head>
+<body>
+  <h1>Formulario de Pedido</h1>
+  <form id="pedidoForm">
+    <label for="equipo">Equipo:</label>
+    <input type="text" id="equipo" name="equipo" required><br><br>
 
-    // Aquí recogemos todos los jugadores y los agregamos a un array
-    var jugadores = [];
-    for (var i = 1; i <= cantidadJugadores; i++) {
-      var jugador = {
-        nombre: document.getElementById("jugador" + i).value,
-        numero: document.getElementById("numero" + i).value,
-        articulo: document.getElementById("articulo" + i).value,
-        talle: document.getElementById("talle" + i).value,
-        short: document.getElementById("short" + i).value,
-        shortTalle: document.getElementById("shortTalle" + i).value
-      };
-      jugadores.push(jugador);
-    }
+    <label for="jugador">Nombre del Jugador:</label>
+    <input type="text" id="jugador" name="jugador" required><br><br>
 
-    // Convertimos el array a un JSON
-    var jugadoresJSON = JSON.stringify(jugadores);
+    <label for="numero">Número de Camiseta:</label>
+    <input type="number" id="numero" name="numero" required><br><br>
 
-    // Construimos la URL de la solicitud GET para enviar los datos a Google Apps Script
-    var url = "https://script.google.com/macros/s/AKfycby2TaQLdoABlNRB900Tr6jUXSYX1Hx_l76-jJoId3ucluAB9SDMC1Gp_ZSlaEUGoa2Z/exec";
-    var params = new URLSearchParams();
-    params.append("equipo", equipo);
-    params.append("comentarios", comentarios);
-    params.append("jugadores", jugadoresJSON);
+    <label for="articulo">Artículo:</label>
+    <select id="articulo" name="articulo" required>
+      <option value="Camiseta">Camiseta</option>
+      <option value="Pantalón">Pantalón</option>
+    </select><br><br>
 
-    // Hacemos la solicitud GET
-    fetch(url + "?" + params.toString())
+    <label for="talle">Talle:</label>
+    <select id="talle" name="talle" required>
+      <option value="S">S</option>
+      <option value="M">M</option>
+      <option value="L">L</option>
+    </select><br><br>
+
+    <button type="submit">Enviar Pedido</button>
+  </form>
+
+  <script>
+    document.getElementById('pedidoForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      var formData = new FormData(this);
+      var data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      fetch('https://script.google.com/macros/s/AKfycby2TaQLdoABlNRB900Tr6jUXSYX1Hx_l76-jJoId3ucluAB9SDMC1Gp_ZSlaEUGoa2Z/exec', {
+        method: 'POST',
+        body: new URLSearchParams(data),
+      })
       .then(response => response.text())
-      .then(result => alert(result))
-      .catch(error => console.log('Error:', error));
-  };
-</script>
+      .then(result => {
+        alert("¡Pedido enviado con éxito!");
+        this.reset(); // Limpiar el formulario
+      })
+      .catch(error => {
+        alert("Hubo un error al enviar el pedido.");
+        console.error(error);
+      });
+    });
+  </script>
+</body>
+</html>
 
