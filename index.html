@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pedido de Indumentaria Deportiva</title>
   <style>
     body {
@@ -68,18 +68,14 @@
   <div class="container">
     <h1>Pedido de Indumentaria</h1>
     <form id="pedidoForm" action="https://formsubmit.co/ajax/joelcirulli@gmail.com" method="POST">
-      
       <div id="playersContainer">
         <div class="player-section" id="player1">
           <label>Nombre del equipo</label>
           <input type="text" name="equipo" required>
-
           <label>Nombre del jugador</label>
           <input type="text" name="jugador" required>
-
           <label>Número del jugador</label>
           <input type="text" name="numero" required>
-
           <label>Seleccioná los artículos</label>
           <select name="articulo[]" multiple required>
             <option value="Camiseta">Camiseta</option>
@@ -88,7 +84,6 @@
             <option value="Buzo">Buzo</option>
             <option value="Otro">Otro</option>
           </select>
-
           <label>Talle</label>
           <select name="talle[]" required>
             <option value="XS">XS</option>
@@ -99,7 +94,6 @@
             <option value="XXL">XXL</option>
             <option value="Otro">Otro</option>
           </select>
-
           <label>¿Quiere Short con talle diferente?</label>
           <select name="short[]" onchange="toggleShortSize(this, 'player1')" required>
             <option value="No">No</option>
@@ -117,7 +111,6 @@
               <option value="Otro">Otro</option>
             </select>
           </div>
-
           <label>Comentarios adicionales</label>
           <textarea name="comentarios"></textarea>
           <span class="remove-player" onclick="removePlayer('player1')">Eliminar jugador</span>
@@ -125,118 +118,61 @@
       </div>
 
       <button type="button" onclick="addPlayer()">Añadir otro jugador</button>
-
       <button type="submit">Enviar pedido</button>
     </form>
 
     <div class="message" id="mensajeConfirmacion">✅ Tu pedido fue enviado. ¡Gracias!</div>
+
+    <button onclick="descargarExcel()">📥 Descargar pedidos en Excel</button>
   </div>
 
   <script>
     function toggleShortSize(select, playerId) {
       const shortSizeField = document.getElementById('shortSize' + playerId);
-      if (select.value === 'Sí') {
-        shortSizeField.style.display = 'block';
-      } else {
-        shortSizeField.style.display = 'none';
-      }
+      shortSizeField.style.display = select.value === 'Sí' ? 'block' : 'none';
     }
 
     function addPlayer() {
-      const playersContainer = document.getElementById('playersContainer');
-      const playerCount = playersContainer.getElementsByClassName('player-section').length + 1;
-      
-      const newPlayer = document.createElement('div');
-      newPlayer.classList.add('player-section');
-      newPlayer.id = 'player' + playerCount;
-      newPlayer.innerHTML = `
-        <label>Nombre del equipo</label>
-        <input type="text" name="equipo" required>
-
-        <label>Nombre del jugador</label>
-        <input type="text" name="jugador" required>
-
-        <label>Número del jugador</label>
-        <input type="text" name="numero" required>
-
-        <label>Seleccioná los artículos</label>
-        <select name="articulo[]" multiple required>
-          <option value="Camiseta">Camiseta</option>
-          <option value="Short">Short</option>
-          <option value="Medias">Medias</option>
-          <option value="Buzo">Buzo</option>
-          <option value="Otro">Otro</option>
-        </select>
-
-        <label>Talle</label>
-        <select name="talle[]" required>
-          <option value="XS">XS</option>
-          <option value="S">S</option>
-          <option value="M">M</option>
-          <option value="L">L</option>
-          <option value="XL">XL</option>
-          <option value="XXL">XXL</option>
-          <option value="Otro">Otro</option>
-        </select>
-
-        <label>¿Quiere Short con talle diferente?</label>
-        <select name="short[]" onchange="toggleShortSize(this, 'player${playerCount}')" required>
-          <option value="No">No</option>
-          <option value="Sí">Sí</option>
-        </select>
-        <div id="shortSizePlayer${playerCount}" style="display:none;">
-          <label>Talle del Short</label>
-          <select name="shortTalle[]" required>
-            <option value="XS">XS</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="XXL">XXL</option>
-            <option value="Otro">Otro</option>
-          </select>
-        </div>
-
-        <label>Comentarios adicionales</label>
-        <textarea name="comentarios"></textarea>
-        <span class="remove-player" onclick="removePlayer('player${playerCount}')">Eliminar jugador</span>
-      `;
-      playersContainer.appendChild(newPlayer);
+      const container = document.getElementById('playersContainer');
+      const count = container.getElementsByClassName('player-section').length + 1;
+      const div = document.createElement('div');
+      div.classList.add('player-section');
+      div.id = 'player' + count;
+      div.innerHTML = document.getElementById('player1').innerHTML.replaceAll('player1', 'player' + count);
+      container.appendChild(div);
     }
 
-    function removePlayer(playerId) {
-      const playerSection = document.getElementById(playerId);
-      playerSection.remove();
+    function removePlayer(id) {
+      const el = document.getElementById(id);
+      if (el) el.remove();
     }
 
     document.getElementById('pedidoForm').addEventListener('submit', function(e) {
-      e.preventDefault(); // Evitar la recarga de la página
-
+      e.preventDefault();
       const form = this;
-      const mensaje = document.getElementById('mensajeConfirmacion');
-      
-      // Enviar el formulario a Formsubmit (con AJAX)
       fetch(form.action, {
         method: form.method,
-        body: new FormData(form),
+        body: new FormData(form)
       })
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
         if (data.success) {
-          // Si el formulario se envió correctamente
           form.reset();
-          mensaje.style.display = 'block'; // Mostrar el mensaje de éxito
+          document.getElementById('mensajeConfirmacion').style.display = 'block';
         } else {
-          // Si hubo un error en el envío
-          alert("Hubo un error al enviar el formulario, por favor intenta de nuevo.");
+          alert("Hubo un error al enviar el formulario.");
         }
       })
-      .catch(error => {
-        // Si ocurrió un error en la solicitud
-        alert("Hubo un error al enviar el formulario, por favor intenta de nuevo.");
-      });
+      .catch(() => alert("Error al enviar el formulario."));
     });
+
+    function descargarExcel() {
+      const id = '1X7dsCfJwYlZW70Vd9op9hLynmfN-0z7HChQHgbRvtyg'; // <-- Usá tu ID de Google Sheets
+      const url = `https://docs.google.com/spreadsheets/d/${id}/export?format=xlsx`;
+      window.open(url, '_blank');
+    }
   </script>
 </body>
 </html>
+
 
