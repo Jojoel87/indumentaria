@@ -1,63 +1,104 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formulario de Pedidos</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Formulario de Pedido</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-image: url("fondo_cancha.jpg"); /* fondo de cancha */
+      background-size: cover;
+      color: #fff;
+      padding: 20px;
+    }
+    .form-container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+    }
+    input, select, textarea {
+      display: block;
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #28a745;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
 </head>
 <body>
-  <h1>Formulario de Pedido</h1>
-  <form id="pedidoForm">
-    <label for="equipo">Equipo:</label>
-    <input type="text" id="equipo" name="equipo" required><br><br>
+  <div class="form-container">
+    <h1>Formulario de Pedido</h1>
+    <form id="pedidoForm">
+      <label for="equipo">Nombre del equipo:</label>
+      <input type="text" id="equipo" name="equipo" required>
 
-    <label for="jugador">Nombre del Jugador:</label>
-    <input type="text" id="jugador" name="jugador" required><br><br>
+      <label for="jugador">Nombre del jugador:</label>
+      <input type="text" id="jugador" name="jugador" required>
 
-    <label for="numero">Número de Camiseta:</label>
-    <input type="number" id="numero" name="numero" required><br><br>
+      <label for="numero">Número:</label>
+      <input type="number" id="numero" name="numero" required>
 
-    <label for="articulo">Artículo:</label>
-    <select id="articulo" name="articulo" required>
-      <option value="Camiseta">Camiseta</option>
-      <option value="Pantalón">Pantalón</option>
-    </select><br><br>
+      <label for="articulo">Artículo:</label>
+      <select name="articulo" id="articulo" multiple required>
+        <option value="Camiseta">Camiseta</option>
+        <option value="Short">Short</option>
+        <option value="Medias">Medias</option>
+      </select>
 
-    <label for="talle">Talle:</label>
-    <select id="talle" name="talle" required>
-      <option value="S">S</option>
-      <option value="M">M</option>
-      <option value="L">L</option>
-    </select><br><br>
+      <label for="talle">Talle camiseta:</label>
+      <input type="text" id="talle" name="talle" required>
 
-    <button type="submit">Enviar Pedido</button>
-  </form>
+      <label for="short">¿Incluye short?</label>
+      <select name="short" id="short" required>
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+      </select>
+
+      <label for="shortTalle">Talle del short (si corresponde):</label>
+      <input type="text" id="shortTalle" name="shortTalle">
+
+      <label for="comentarios">Comentarios:</label>
+      <textarea name="comentarios" id="comentarios"></textarea>
+
+      <button type="submit">Enviar Pedido</button>
+    </form>
+    <p id="respuesta"></p>
+  </div>
 
   <script>
-    document.getElementById('pedidoForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      var formData = new FormData(this);
-      var data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbx42atk2zkJl8ILx2EVnoV52TI4sO-E98W9rLMTdSlIsRzq6lfuSppWND9oJXioGD/exec';
 
-      fetch('https://script.google.com/macros/s/AKfycby2TaQLdoABlNRB900Tr6jUXSYX1Hx_l76-jJoId3ucluAB9SDMC1Gp_ZSlaEUGoa2Z/exec', {
-        method: 'POST',
-        body: new URLSearchParams(data),
-      })
-      .then(response => response.text())
-      .then(result => {
-        alert("¡Pedido enviado con éxito!");
-        this.reset(); // Limpiar el formulario
-      })
-      .catch(error => {
-        alert("Hubo un error al enviar el pedido.");
-        console.error(error);
-      });
+    document.getElementById('pedidoForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const form = e.target;
+
+      const formData = new FormData(form);
+
+      fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
+        .then(() => {
+          document.getElementById('respuesta').innerText = "¡Pedido enviado con éxito!";
+          form.reset();
+        })
+        .catch(error => {
+          document.getElementById('respuesta').innerText = "Hubo un error al enviar el pedido.";
+          console.error('Error!', error.message);
+        });
     });
   </script>
 </body>
 </html>
-
