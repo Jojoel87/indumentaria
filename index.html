@@ -1,133 +1,98 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Pedido</title>
-    <style>
-        /* Estilo básico del formulario */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            padding: 20px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        form {
-            max-width: 500px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        label {
-            display: block;
-            margin: 10px 0 5px;
-            font-weight: bold;
-        }
-
-        input, select, button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        button {
-            background-color: #28a745;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pedido de Indumentaria</title>
 </head>
 <body>
+  <form id="pedidoForm">
+    <label>Equipo: <input name="equipo" required></label><br><br>
+    <div id="jugadoresContainer">
+      <div class="jugador">
+        <label>Jugador: <input name="jugador" required></label>
+        <label>Número: <input name="numero" required></label>
+        <label>Artículo: <input name="articulo" required></label>
+        <label>Talle: <input name="talle" required></label>
+        <button type="button" onclick="eliminarJugador(this)">Eliminar</button>
+      </div>
+    </div>
+    <button type="button" onclick="agregarJugador()">Agregar Jugador</button><br><br>
+    <label>Comentarios: <textarea name="comentarios"></textarea></label><br><br>
+    <button type="submit">Enviar Pedido</button>
+  </form>
 
-    <h1>Formulario de Pedido de Indumentaria</h1>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+  <script>
+    emailjs.init("NzkM5H3rDK6oNeLIz"); // Tu public key
 
-    <form id="pedidoForm">
-        <label for="equipo">Equipo:</label>
-        <input type="text" id="equipo" name="equipo" required><br>
+    function agregarJugador() {
+      const container = document.getElementById("jugadoresContainer");
+      const nuevo = document.createElement("div");
+      nuevo.classList.add("jugador");
+      nuevo.innerHTML = `
+        <label>Jugador: <input name="jugador" required></label>
+        <label>Número: <input name="numero" required></label>
+        <label>Artículo: <input name="articulo" required></label>
+        <label>Talle: <input name="talle" required></label>
+        <button type="button" onclick="eliminarJugador(this)">Eliminar</button>
+      `;
+      container.appendChild(nuevo);
+    }
 
-        <label for="jugador">Nombre del Jugador:</label>
-        <input type="text" id="jugador" name="jugador" required><br>
+    function eliminarJugador(btn) {
+      btn.parentElement.remove();
+    }
 
-        <label for="numero">Número de Camiseta:</label>
-        <input type="number" id="numero" name="numero" required><br>
+    document.getElementById("pedidoForm").onsubmit = async function(e) {
+      e.preventDefault();
 
-        <label for="articulo">Artículo:</label>
-        <select id="articulo" name="articulo" required>
-            <option value="Camiseta">Camiseta</option>
-            <option value="Pantalón">Pantalón</option>
-            <option value="Buzo">Buzo</option>
-        </select><br>
+      const form = e.target;
+      const equipo = form.equipo.value;
+      const comentarios = form.comentarios.value;
+      const jugadores = form.querySelectorAll(".jugador");
 
-        <label for="talle">Talle:</label>
-        <select id="talle" name="talle" required>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-        </select><br>
+      const datos = [["Equipo", "Jugador", "Número", "Artículo", "Talle", "Comentarios"]];
+      jugadores.forEach(j => {
+        datos.push([
+          equipo,
+          j.querySelector('input[name="jugador"]').value,
+          j.querySelector('input[name="numero"]').value,
+          j.querySelector('input[name="articulo"]').value,
+          j.querySelector('input[name="talle"]').value,
+          comentarios
+        ]);
+      });
 
-        <label for="short">¿Incluye Short?</label>
-        <select id="short" name="short">
-            <option value="Sí">Sí</option>
-            <option value="No">No</option>
-        </select><br>
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(datos);
+      XLSX.utils.book_append_sheet(wb, ws, "Pedido");
 
-        <label for="shortTalle">Talle del Short (si aplica):</label>
-        <select id="shortTalle" name="shortTalle">
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="No">No Aplica</option>
-        </select><br>
+      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
 
-        <label for="comentarios">Comentarios:</label>
-        <textarea id="comentarios" name="comentarios"></textarea><br>
-
-        <button type="submit">Enviar Pedido</button>
-    </form>
-
-    <script>
-        document.getElementById('pedidoForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            var formData = new FormData(this);
-            var data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            fetch('https://script.google.com/macros/s/AKfycby2TaQLdoABlNRB900Tr6jUXSYX1Hx_l76-jJoId3ucluAB9SDMC1Gp_ZSlaEUGoa2Z/exec', {
-                method: 'POST',
-                body: new URLSearchParams(data),
-            })
-            .then(response => response.text())
-            .then(result => {
-                alert("¡Pedido enviado con éxito!");
-                this.reset(); // Limpiar el formulario
-            })
-            .catch(error => {
-                alert("Hubo un error al enviar el pedido.");
-                console.error(error);
-            });
-        });
-    </script>
-
+      emailjs.send("service_pgmy13s", "template_c2kjc6j", {
+        to_name: "Administrador",
+        from_name: equipo,
+        message: "Pedido nuevo",
+        file: wbout,
+        filename: `pedido_${equipo}.xlsx`
+      }).then(() => {
+        alert("Pedido enviado con éxito");
+        form.reset();
+        document.getElementById("jugadoresContainer").innerHTML = `
+          <div class="jugador">
+            <label>Jugador: <input name="jugador" required></label>
+            <label>Número: <input name="numero" required></label>
+            <label>Artículo: <input name="articulo" required></label>
+            <label>Talle: <input name="talle" required></label>
+            <button type="button" onclick="eliminarJugador(this)">Eliminar</button>
+          </div>`;
+      }).catch(err => {
+        alert("Error al enviar: " + err.text);
+      });
+    };
+  </script>
 </body>
 </html>
+
