@@ -1,109 +1,39 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Pedido de Indumentaria</title>
-  <style>
-    body {
-      background-image: url('https://images.unsplash.com/photo-1508609349937-5ec4ae374ebf'); /* Fondo tipo cancha */
-      background-size: cover;
-      color: white;
-      font-family: Arial, sans-serif;
-      padding: 20px;
+<script>
+  document.getElementById("pedidoForm").onsubmit = function(event) {
+    event.preventDefault(); // Para evitar el comportamiento por defecto del formulario
+    
+    var equipo = document.getElementById("equipo").value;
+    var comentarios = document.getElementById("comentarios").value;
+
+    // Aquí recogemos todos los jugadores y los agregamos a un array
+    var jugadores = [];
+    for (var i = 1; i <= cantidadJugadores; i++) {
+      var jugador = {
+        nombre: document.getElementById("jugador" + i).value,
+        numero: document.getElementById("numero" + i).value,
+        articulo: document.getElementById("articulo" + i).value,
+        talle: document.getElementById("talle" + i).value,
+        short: document.getElementById("short" + i).value,
+        shortTalle: document.getElementById("shortTalle" + i).value
+      };
+      jugadores.push(jugador);
     }
 
-    form {
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 500px;
-      margin: auto;
-    }
+    // Convertimos el array a un JSON
+    var jugadoresJSON = JSON.stringify(jugadores);
 
-    label {
-      display: block;
-      margin-top: 15px;
-    }
+    // Construimos la URL de la solicitud GET para enviar los datos a Google Apps Script
+    var url = "https://script.google.com/macros/s/AKfycby2TaQLdoABlNRB900Tr6jUXSYX1Hx_l76-jJoId3ucluAB9SDMC1Gp_ZSlaEUGoa2Z/exec";
+    var params = new URLSearchParams();
+    params.append("equipo", equipo);
+    params.append("comentarios", comentarios);
+    params.append("jugadores", jugadoresJSON);
 
-    input, select, textarea, button {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 5px;
-      border: none;
-    }
-
-    button {
-      background-color: #28a745;
-      color: white;
-      font-weight: bold;
-      margin-top: 20px;
-    }
-  </style>
-</head>
-<body>
-  <form id="pedidoForm">
-    <h2>Formulario de Pedido</h2>
-
-    <label for="equipo">Nombre del equipo:</label>
-    <input type="text" id="equipo" name="equipo" required />
-
-    <label for="jugador">Nombre del jugador:</label>
-    <input type="text" id="jugador" name="jugador" required />
-
-    <label for="numero">Número:</label>
-    <input type="number" id="numero" name="numero" required />
-
-    <label for="articulo">Artículo:</label>
-    <select id="articulo" name="articulo">
-      <option value="Camiseta">Camiseta</option>
-      <option value="Buzo">Buzo</option>
-      <option value="Campera">Campera</option>
-    </select>
-
-    <label for="talle">Talle de camiseta:</label>
-    <input type="text" id="talle" name="talle" required />
-
-    <label for="short">¿Incluye short?</label>
-    <select id="short" name="short">
-      <option value="Sí">Sí</option>
-      <option value="No">No</option>
-    </select>
-
-    <label for="shortTalle">Talle del short (si corresponde):</label>
-    <input type="text" id="shortTalle" name="shortTalle" />
-
-    <label for="comentarios">Comentarios:</label>
-    <textarea id="comentarios" name="comentarios"></textarea>
-
-    <button type="submit">Enviar pedido</button>
-  </form>
-
-  <script>
-    document.getElementById('pedidoForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const formData = new FormData(this);
-      const params = new URLSearchParams();
-      formData.forEach((value, key) => {
-        params.append(key, value);
-      });
-
-      fetch('https://script.google.com/macros/s/AKfycbyKesMtRtmU1aEnHpMnI2K2sBNaENgCbsqWA_JTBJ-8UbGKjRM92XQvWrhalYFGrjA0/exec', {
-        method: 'POST',
-        body: params
-      })
+    // Hacemos la solicitud GET
+    fetch(url + "?" + params.toString())
       .then(response => response.text())
-      .then(data => {
-        alert("Pedido enviado correctamente");
-        document.getElementById('pedidoForm').reset();
-      })
-      .catch(error => {
-        alert("Error al enviar el pedido. Intente de nuevo.");
-        console.error(error);
-      });
-    });
-  </script>
-</body>
-</html>
+      .then(result => alert(result))
+      .catch(error => console.log('Error:', error));
+  };
+</script>
 
