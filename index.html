@@ -1,95 +1,133 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Pedido de Indumentaria</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: url('https://i.ibb.co/ZJvBDpX/cancha-verde.jpg') no-repeat center center fixed;
-      background-size: cover;
-      color: white;
-      padding: 20px;
-    }
-    form {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 500px;
-      margin: auto;
-    }
-    input, select, textarea, button {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 5px;
-      border: none;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      font-size: 16px;
-    }
-    h1 {
-      text-align: center;
-      color: #00ff00;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Pedido</title>
+    <style>
+        /* Estilo básico del formulario */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-  <form id="pedidoForm">
-    <h1>Pedido de Indumentaria</h1>
-    <input type="text" name="equipo" placeholder="Nombre del equipo" required>
-    <input type="text" name="jugador" placeholder="Nombre del jugador" required>
-    <input type="number" name="numero" placeholder="Número" required>
 
-    <label for="articulo">Artículo:</label>
-    <select name="articulo" multiple required>
-      <option value="Camiseta">Camiseta</option>
-      <option value="Short">Short</option>
-      <option value="Medias">Medias</option>
-    </select>
+    <h1>Formulario de Pedido de Indumentaria</h1>
 
-    <input type="text" name="talle" placeholder="Talle camiseta (S, M, L, etc.)" required>
-    <input type="checkbox" name="short" value="Sí"> Incluir short<br><br>
-    <input type="text" name="shortTalle" placeholder="Talle del short (si aplica)">
-    <textarea name="comentarios" placeholder="Comentarios adicionales..."></textarea>
+    <form id="pedidoForm">
+        <label for="equipo">Equipo:</label>
+        <input type="text" id="equipo" name="equipo" required><br>
 
-    <button type="submit">Enviar pedido</button>
-  </form>
+        <label for="jugador">Nombre del Jugador:</label>
+        <input type="text" id="jugador" name="jugador" required><br>
 
-  <script>
-    const form = document.getElementById("pedidoForm");
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+        <label for="numero">Número de Camiseta:</label>
+        <input type="number" id="numero" name="numero" required><br>
 
-      const data = new FormData(form);
-      const params = new URLSearchParams();
+        <label for="articulo">Artículo:</label>
+        <select id="articulo" name="articulo" required>
+            <option value="Camiseta">Camiseta</option>
+            <option value="Pantalón">Pantalón</option>
+            <option value="Buzo">Buzo</option>
+        </select><br>
 
-      for (const pair of data.entries()) {
-        params.append(pair[0], pair[1]);
-      }
+        <label for="talle">Talle:</label>
+        <select id="talle" name="talle" required>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+        </select><br>
 
-      // Incluir todos los artículos seleccionados
-      const articulosSeleccionados = [...form.articulo.selectedOptions].map(opt => opt.value);
-      params.delete('articulo');
-      articulosSeleccionados.forEach(item => params.append('articulo', item));
+        <label for="short">¿Incluye Short?</label>
+        <select id="short" name="short">
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
+        </select><br>
 
-      fetch("https://script.google.com/macros/s/AKfycbyWccCqKHkGXsOO0iMFt0VV6jVTXQRMvIO7pf220iJC2_aP1yMcqPsgDBZ_w0/exec", {
-        method: "POST",
-        body: params
-      })
-      .then(res => res.text())
-      .then(msg => {
-        alert(msg);
-        form.reset();
-      })
-      .catch(err => {
-        alert("Error al enviar el pedido.");
-        console.error(err);
-      });
-    });
-  </script>
+        <label for="shortTalle">Talle del Short (si aplica):</label>
+        <select id="shortTalle" name="shortTalle">
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="No">No Aplica</option>
+        </select><br>
+
+        <label for="comentarios">Comentarios:</label>
+        <textarea id="comentarios" name="comentarios"></textarea><br>
+
+        <button type="submit">Enviar Pedido</button>
+    </form>
+
+    <script>
+        document.getElementById('pedidoForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(this);
+            var data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            fetch('https://script.google.com/macros/s/AKfycby2TaQLdoABlNRB900Tr6jUXSYX1Hx_l76-jJoId3ucluAB9SDMC1Gp_ZSlaEUGoa2Z/exec', {
+                method: 'POST',
+                body: new URLSearchParams(data),
+            })
+            .then(response => response.text())
+            .then(result => {
+                alert("¡Pedido enviado con éxito!");
+                this.reset(); // Limpiar el formulario
+            })
+            .catch(error => {
+                alert("Hubo un error al enviar el pedido.");
+                console.error(error);
+            });
+        });
+    </script>
+
 </body>
 </html>
-
