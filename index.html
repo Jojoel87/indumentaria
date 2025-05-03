@@ -1,98 +1,46 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pedido de Indumentaria</title>
+    <title>Formulario de Pedido</title>
 </head>
 <body>
-  <form id="pedidoForm">
-    <label>Equipo: <input name="equipo" required></label><br><br>
-    <div id="jugadoresContainer">
-      <div class="jugador">
-        <label>Jugador: <input name="jugador" required></label>
-        <label>Número: <input name="numero" required></label>
-        <label>Artículo: <input name="articulo" required></label>
-        <label>Talle: <input name="talle" required></label>
-        <button type="button" onclick="eliminarJugador(this)">Eliminar</button>
-      </div>
-    </div>
-    <button type="button" onclick="agregarJugador()">Agregar Jugador</button><br><br>
-    <label>Comentarios: <textarea name="comentarios"></textarea></label><br><br>
-    <button type="submit">Enviar Pedido</button>
-  </form>
+    <h1>Formulario de Pedido</h1>
+    <form id="pedidoForm">
+        <label for="file">Selecciona el archivo Excel:</label>
+        <input type="file" id="file" name="file" required><br><br>
+        <button type="submit">Enviar Pedido</button>
+    </form>
 
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-  <script>
-    emailjs.init("NzkM5H3rDK6oNeLIz"); // Tu public key
+    <script>
+        document.getElementById('pedidoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
 
-    function agregarJugador() {
-      const container = document.getElementById("jugadoresContainer");
-      const nuevo = document.createElement("div");
-      nuevo.classList.add("jugador");
-      nuevo.innerHTML = `
-        <label>Jugador: <input name="jugador" required></label>
-        <label>Número: <input name="numero" required></label>
-        <label>Artículo: <input name="articulo" required></label>
-        <label>Talle: <input name="talle" required></label>
-        <button type="button" onclick="eliminarJugador(this)">Eliminar</button>
-      `;
-      container.appendChild(nuevo);
-    }
+            var formData = new FormData();
+            var file = document.getElementById('file').files[0];
+            
+            // Convertimos el archivo a base64
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                var fileBase64 = reader.result.split(',')[1]; // Eliminar el encabezado de base64
 
-    function eliminarJugador(btn) {
-      btn.parentElement.remove();
-    }
+                formData.append('file', fileBase64);
 
-    document.getElementById("pedidoForm").onsubmit = async function(e) {
-      e.preventDefault();
-
-      const form = e.target;
-      const equipo = form.equipo.value;
-      const comentarios = form.comentarios.value;
-      const jugadores = form.querySelectorAll(".jugador");
-
-      const datos = [["Equipo", "Jugador", "Número", "Artículo", "Talle", "Comentarios"]];
-      jugadores.forEach(j => {
-        datos.push([
-          equipo,
-          j.querySelector('input[name="jugador"]').value,
-          j.querySelector('input[name="numero"]').value,
-          j.querySelector('input[name="articulo"]').value,
-          j.querySelector('input[name="talle"]').value,
-          comentarios
-        ]);
-      });
-
-      const wb = XLSX.utils.book_new();
-      const ws = XLSX.utils.aoa_to_sheet(datos);
-      XLSX.utils.book_append_sheet(wb, ws, "Pedido");
-
-      const wbout = XLSX.write(wb, { bookType: "xlsx", type: "base64" });
-
-      emailjs.send("service_pgmy13s", "template_c2kjc6j", {
-        to_name: "Administrador",
-        from_name: equipo,
-        message: "Pedido nuevo",
-        file: wbout,
-        filename: `pedido_${equipo}.xlsx`
-      }).then(() => {
-        alert("Pedido enviado con éxito");
-        form.reset();
-        document.getElementById("jugadoresContainer").innerHTML = `
-          <div class="jugador">
-            <label>Jugador: <input name="jugador" required></label>
-            <label>Número: <input name="numero" required></label>
-            <label>Artículo: <input name="articulo" required></label>
-            <label>Talle: <input name="talle" required></label>
-            <button type="button" onclick="eliminarJugador(this)">Eliminar</button>
-          </div>`;
-      }).catch(err => {
-        alert("Error al enviar: " + err.text);
-      });
-    };
-  </script>
+                // Enviar el archivo al Google Apps Script
+                fetch('https://script.google.com/macros/s/AKfycbzDy10N2C-ykQFee5LY79ysRyV5tStiEbO7wOyrtUKNP9iUY7bX0t_kUr0vkpxeOay6/exec', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data); // Muestra el mensaje de éxito o error
+                })
+                .catch(error => {
+                    alert('Error al enviar el archivo: ' + error);
+                });
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
 </body>
 </html>
 
