@@ -2,241 +2,94 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedido de Indumentaria Deportiva</title>
+  <title>Pedido de Indumentaria</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: url('https://images.unsplash.com/photo-1611506815197-52f8639b3053?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200') no-repeat center center fixed;
+      background: url('https://i.ibb.co/ZJvBDpX/cancha-verde.jpg') no-repeat center center fixed;
       background-size: cover;
       color: white;
+      padding: 20px;
     }
-    .container {
+    form {
       background-color: rgba(0, 0, 0, 0.7);
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 30px;
-      border-radius: 15px;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      margin: auto;
     }
-    h1 {
-      text-align: center;
-      color: #00ff7f;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-    }
-    input, select, textarea {
+    input, select, textarea, button {
       width: 100%;
+      margin-bottom: 15px;
       padding: 10px;
-      margin-top: 5px;
-      border-radius: 8px;
+      border-radius: 5px;
       border: none;
     }
     button {
-      background-color: #00ff7f;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      margin-top: 20px;
-      border-radius: 10px;
+      background-color: #4CAF50;
+      color: white;
       font-size: 16px;
-      cursor: pointer;
     }
-    .message {
-      display: none;
+    h1 {
       text-align: center;
-      margin-top: 20px;
-      font-size: 18px;
-      color: #00ff7f;
-    }
-    .player-section {
-      margin-bottom: 20px;
-      padding: 15px;
-      background-color: rgba(0, 0, 0, 0.6);
-      border-radius: 10px;
-    }
-    .remove-player {
-      color: red;
-      cursor: pointer;
-      font-size: 14px;
+      color: #00ff00;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <form id="pedidoForm">
     <h1>Pedido de Indumentaria</h1>
-    <form id="pedidoForm">
-      
-      <div id="playersContainer">
-        <div class="player-section" id="player1">
-          <label>Nombre del equipo</label>
-          <input type="text" name="equipo" required>
+    <input type="text" name="equipo" placeholder="Nombre del equipo" required>
+    <input type="text" name="jugador" placeholder="Nombre del jugador" required>
+    <input type="number" name="numero" placeholder="Número" required>
 
-          <label>Nombre del jugador</label>
-          <input type="text" name="jugador" required>
+    <label for="articulo">Artículo:</label>
+    <select name="articulo" multiple required>
+      <option value="Camiseta">Camiseta</option>
+      <option value="Short">Short</option>
+      <option value="Medias">Medias</option>
+    </select>
 
-          <label>Número del jugador</label>
-          <input type="text" name="numero" required>
+    <input type="text" name="talle" placeholder="Talle camiseta (S, M, L, etc.)" required>
+    <input type="checkbox" name="short" value="Sí"> Incluir short<br><br>
+    <input type="text" name="shortTalle" placeholder="Talle del short (si aplica)">
+    <textarea name="comentarios" placeholder="Comentarios adicionales..."></textarea>
 
-          <label>Seleccioná los artículos</label>
-          <select name="articulo[]" multiple required>
-            <option value="Camiseta">Camiseta</option>
-            <option value="Short">Short</option>
-            <option value="Medias">Medias</option>
-            <option value="Buzo">Buzo</option>
-            <option value="Otro">Otro</option>
-          </select>
-
-          <label>Talle</label>
-          <select name="talle[]" required>
-            <option value="XS">XS</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="XXL">XXL</option>
-            <option value="Otro">Otro</option>
-          </select>
-
-          <label>¿Quiere Short con talle diferente?</label>
-          <select name="short[]" onchange="toggleShortSize(this, 'player1')" required>
-            <option value="No">No</option>
-            <option value="Sí">Sí</option>
-          </select>
-          <div id="shortSizePlayer1" style="display:none;">
-            <label>Talle del Short</label>
-            <select name="shortTalle[]" required>
-              <option value="XS">XS</option>
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-              <option value="XXL">XXL</option>
-              <option value="Otro">Otro</option>
-            </select>
-          </div>
-
-          <label>Comentarios adicionales</label>
-          <textarea name="comentarios"></textarea>
-          <span class="remove-player" onclick="removePlayer('player1')">Eliminar jugador</span>
-        </div>
-      </div>
-
-      <button type="button" onclick="addPlayer()">Añadir otro jugador</button>
-
-      <button type="submit">Enviar pedido</button>
-    </form>
-
-    <div class="message" id="mensajeConfirmacion">✅ Tu pedido fue enviado. ¡Gracias!</div>
-  </div>
+    <button type="submit">Enviar pedido</button>
+  </form>
 
   <script>
-    function toggleShortSize(select, playerId) {
-      const shortSizeField = document.getElementById('shortSize' + playerId);
-      if (select.value === 'Sí') {
-        shortSizeField.style.display = 'block';
-      } else {
-        shortSizeField.style.display = 'none';
+    const form = document.getElementById("pedidoForm");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const data = new FormData(form);
+      const params = new URLSearchParams();
+
+      for (const pair of data.entries()) {
+        params.append(pair[0], pair[1]);
       }
-    }
 
-    function addPlayer() {
-      const playersContainer = document.getElementById('playersContainer');
-      const playerCount = playersContainer.getElementsByClassName('player-section').length + 1;
-      
-      const newPlayer = document.createElement('div');
-      newPlayer.classList.add('player-section');
-      newPlayer.id = 'player' + playerCount;
-      newPlayer.innerHTML = `
-        <label>Nombre del equipo</label>
-        <input type="text" name="equipo" required>
+      // Incluir todos los artículos seleccionados
+      const articulosSeleccionados = [...form.articulo.selectedOptions].map(opt => opt.value);
+      params.delete('articulo');
+      articulosSeleccionados.forEach(item => params.append('articulo', item));
 
-        <label>Nombre del jugador</label>
-        <input type="text" name="jugador" required>
-
-        <label>Número del jugador</label>
-        <input type="text" name="numero" required>
-
-        <label>Seleccioná los artículos</label>
-        <select name="articulo[]" multiple required>
-          <option value="Camiseta">Camiseta</option>
-          <option value="Short">Short</option>
-          <option value="Medias">Medias</option>
-          <option value="Buzo">Buzo</option>
-          <option value="Otro">Otro</option>
-        </select>
-
-        <label>Talle</label>
-        <select name="talle[]" required>
-          <option value="XS">XS</option>
-          <option value="S">S</option>
-          <option value="M">M</option>
-          <option value="L">L</option>
-          <option value="XL">XL</option>
-          <option value="XXL">XXL</option>
-          <option value="Otro">Otro</option>
-        </select>
-
-        <label>¿Quiere Short con talle diferente?</label>
-        <select name="short[]" onchange="toggleShortSize(this, 'player${playerCount}')" required>
-          <option value="No">No</option>
-          <option value="Sí">Sí</option>
-        </select>
-        <div id="shortSizePlayer${playerCount}" style="display:none;">
-          <label>Talle del Short</label>
-          <select name="shortTalle[]" required>
-            <option value="XS">XS</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="XXL">XXL</option>
-            <option value="Otro">Otro</option>
-          </select>
-        </div>
-
-        <label>Comentarios adicionales</label>
-        <textarea name="comentarios"></textarea>
-        <span class="remove-player" onclick="removePlayer('player${playerCount}')">Eliminar jugador</span>
-      `;
-      playersContainer.appendChild(newPlayer);
-    }
-
-    function removePlayer(playerId) {
-      const playerSection = document.getElementById(playerId);
-      playerSection.remove();
-    }
-
-    document.getElementById('pedidoForm').addEventListener('submit', function(e) {
-      e.preventDefault(); // Evitar la recarga de la página
-
-      const form = this;
-      const mensaje = document.getElementById('mensajeConfirmacion');
-      
-      // Enviar el formulario a Google Sheets con fetch
-      fetch('URL_DEL_SCRIPT_GOOGLE_APPS', {
-        method: 'POST',
-        body: new FormData(form),
+      fetch("https://script.google.com/macros/s/AKfycbyWccCqKHkGXsOO0iMFt0VV6jVTXQRMvIO7pf220iJC2_aP1yMcqPsgDBZ_w0/exec", {
+        method: "POST",
+        body: params
       })
-      .then(response => response.text())
-      .then(data => {
-        if (data === 'Gracias por tu pedido') {
-          form.reset();
-          mensaje.style.display = 'block'; // Mostrar mensaje de éxito
-        } else {
-          alert("Hubo un error al enviar el formulario.");
-        }
+      .then(res => res.text())
+      .then(msg => {
+        alert(msg);
+        form.reset();
       })
-      .catch(error => {
-        alert("Hubo un error al enviar el formulario.");
+      .catch(err => {
+        alert("Error al enviar el pedido.");
+        console.error(err);
       });
     });
   </script>
-</body>
-</html>
-
 </body>
 </html>
 
