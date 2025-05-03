@@ -1,104 +1,95 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Formulario de Pedido</title>
+  <meta charset="UTF-8">
+  <title>Pedido de Indumentaria</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-image: url("fondo_cancha.jpg"); /* fondo de cancha */
+      background: url('https://i.ibb.co/ZJvBDpX/cancha-verde.jpg') no-repeat center center fixed;
       background-size: cover;
-      color: #fff;
+      color: white;
       padding: 20px;
     }
-    .form-container {
-      background: rgba(0, 0, 0, 0.7);
+    form {
+      background-color: rgba(0, 0, 0, 0.7);
       padding: 20px;
       border-radius: 10px;
-      max-width: 600px;
+      max-width: 500px;
       margin: auto;
     }
-    input, select, textarea {
-      display: block;
+    input, select, textarea, button {
       width: 100%;
       margin-bottom: 15px;
       padding: 10px;
-      border: none;
       border-radius: 5px;
+      border: none;
     }
     button {
-      padding: 10px 20px;
-      background-color: #28a745;
-      border: none;
+      background-color: #4CAF50;
       color: white;
-      border-radius: 5px;
-      cursor: pointer;
+      font-size: 16px;
     }
-    button:hover {
-      background-color: #218838;
+    h1 {
+      text-align: center;
+      color: #00ff00;
     }
   </style>
 </head>
 <body>
-  <div class="form-container">
-    <h1>Formulario de Pedido</h1>
-    <form id="pedidoForm">
-      <label for="equipo">Nombre del equipo:</label>
-      <input type="text" id="equipo" name="equipo" required>
+  <form id="pedidoForm">
+    <h1>Pedido de Indumentaria</h1>
+    <input type="text" name="equipo" placeholder="Nombre del equipo" required>
+    <input type="text" name="jugador" placeholder="Nombre del jugador" required>
+    <input type="number" name="numero" placeholder="Número" required>
 
-      <label for="jugador">Nombre del jugador:</label>
-      <input type="text" id="jugador" name="jugador" required>
+    <label for="articulo">Artículo:</label>
+    <select name="articulo" multiple required>
+      <option value="Camiseta">Camiseta</option>
+      <option value="Short">Short</option>
+      <option value="Medias">Medias</option>
+    </select>
 
-      <label for="numero">Número:</label>
-      <input type="number" id="numero" name="numero" required>
+    <input type="text" name="talle" placeholder="Talle camiseta (S, M, L, etc.)" required>
+    <input type="checkbox" name="short" value="Sí"> Incluir short<br><br>
+    <input type="text" name="shortTalle" placeholder="Talle del short (si aplica)">
+    <textarea name="comentarios" placeholder="Comentarios adicionales..."></textarea>
 
-      <label for="articulo">Artículo:</label>
-      <select name="articulo" id="articulo" multiple required>
-        <option value="Camiseta">Camiseta</option>
-        <option value="Short">Short</option>
-        <option value="Medias">Medias</option>
-      </select>
-
-      <label for="talle">Talle camiseta:</label>
-      <input type="text" id="talle" name="talle" required>
-
-      <label for="short">¿Incluye short?</label>
-      <select name="short" id="short" required>
-        <option value="Sí">Sí</option>
-        <option value="No">No</option>
-      </select>
-
-      <label for="shortTalle">Talle del short (si corresponde):</label>
-      <input type="text" id="shortTalle" name="shortTalle">
-
-      <label for="comentarios">Comentarios:</label>
-      <textarea name="comentarios" id="comentarios"></textarea>
-
-      <button type="submit">Enviar Pedido</button>
-    </form>
-    <p id="respuesta"></p>
-  </div>
+    <button type="submit">Enviar pedido</button>
+  </form>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbx42atk2zkJl8ILx2EVnoV52TI4sO-E98W9rLMTdSlIsRzq6lfuSppWND9oJXioGD/exec';
-
-    document.getElementById('pedidoForm').addEventListener('submit', e => {
+    const form = document.getElementById("pedidoForm");
+    form.addEventListener("submit", function (e) {
       e.preventDefault();
-      const form = e.target;
 
-      const formData = new FormData(form);
+      const data = new FormData(form);
+      const params = new URLSearchParams();
 
-      fetch(scriptURL, { method: 'POST', body: formData, mode: 'no-cors' })
-        .then(() => {
-          document.getElementById('respuesta').innerText = "¡Pedido enviado con éxito!";
-          form.reset();
-        })
-        .catch(error => {
-          document.getElementById('respuesta').innerText = "Hubo un error al enviar el pedido.";
-          console.error('Error!', error.message);
-        });
+      for (const pair of data.entries()) {
+        params.append(pair[0], pair[1]);
+      }
+
+      // Incluir todos los artículos seleccionados
+      const articulosSeleccionados = [...form.articulo.selectedOptions].map(opt => opt.value);
+      params.delete('articulo');
+      articulosSeleccionados.forEach(item => params.append('articulo', item));
+
+      fetch("https://script.google.com/macros/s/AKfycbyWccCqKHkGXsOO0iMFt0VV6jVTXQRMvIO7pf220iJC2_aP1yMcqPsgDBZ_w0/exec", {
+        method: "POST",
+        body: params
+      })
+      .then(res => res.text())
+      .then(msg => {
+        alert(msg);
+        form.reset();
+      })
+      .catch(err => {
+        alert("Error al enviar el pedido.");
+        console.error(err);
+      });
     });
   </script>
 </body>
 </html>
+
